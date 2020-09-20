@@ -138,34 +138,6 @@
 #|==================================================================|#
 
 
-;;Efecto que cae hasta abajo
-(define (gravityCheck column player)
-  (cond
-    ((null? (car column)) '())
-    ((null? (cdr column)) (list player))
-    ((not (equal? (cadr column) 0)) (cons player (cdr column)))
-    (else (cons (car column) (gravityCheck (cdr column) player)))
-  )
-)
-
-(define (play_aux player colNum matrx cont)
-  (cond
-    ((null? matrx) null)
-    ((equal? cont colNum) (cons (gravityCheck (car matrx) player) (cdr matrx)))
-    (else (cons (car matrx) (play_aux player colNum (cdr matrx) (+ cont 1))))
-  )
-)
-
-
-;;Hacer una jugada
-;;player: ficha de quien va a jugar: 1 (jugador), 2 (máquina)
-;;colNum: número de columna donde se quiere tirar
-(define (play player colNum matrx)
-  (cond
-    ((or (> colNum (len (car matrx))) (fullColumn? colNum matrx)) "Error, no se puede jugar en esa columna")
-    (else (traspuesta (play_aux player colNum (traspuesta matrx) 0)))
-  )
-)
 
 
 
