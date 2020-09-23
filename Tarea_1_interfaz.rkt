@@ -74,7 +74,7 @@
                   ((and (string->number (send filas_TF get-value)) (string->number (send columnas_TF get-value)) (not (false? (generateMatrx (string->number (send columnas_TF get-value)) (string->number (send filas_TF get-value))))) (not gameStart) )
                    (crear_botones_columnas (string->number (send columnas_TF get-value)) 0)
                    (write (generateMatrx (string->number (send columnas_TF get-value)) (string->number (send filas_TF get-value))))
-                   (asignar_matriz (generateMatrx (string->number (send columnas_TF get-value)) (string->number (send filas_TF get-value))))
+                   (asignar_matriz (generateMatrx (string->number (send filas_TF get-value)) (string->number (send columnas_TF get-value))))
                    (crear_matriz_interfaz (car matrix))
                    (asignar_gameStart #t)
                   )
