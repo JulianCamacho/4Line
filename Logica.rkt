@@ -4,18 +4,28 @@
 
 (provide generateMatrx)
 (provide play)
+(provide selec)
+(provide objetivo)
+(provide viabilidad)
+(provide buscar)
+(provide traspuesta)
+(provide maximo)
+(provide solucion)
 
-(define (getPos_aux elem lst index)
+(define (getPos_aux elem lst index out)
   (cond
-    ((null? lst) #f)
-    ((equal? elem (car lst)) index)
-    (else (getPos_aux elem (cdr lst) (+ index 1)))
+    ((null? lst) (reverseList out))
+    ((equal? elem (car lst))
+     
+     (getPos_aux elem (cdr lst) (+ index 1) (cons (list index) out)))
+    
+    (else (getPos_aux elem (cdr lst) (+ index 1) out))
   )
 )
 
 ;;Obtener el índice de ese elemeto
 (define (getPos elem lst)
-  (getPos_aux elem lst 0)
+  (getPos_aux elem lst 0 '())
 )
 
 
@@ -385,7 +395,101 @@
         (2 1 1 2)
         ))
 
+#|==================================================================|#
+;;GREEDY ALGORITHM
+
+#| FUNCION CANDIDATOS |#
+;Define la cantidad de columnas disponibles para jugar
+(define (candi matrx)
+  (cond
+    ((full? matrx) null)
+    (else
+     (len (car matrx)))))
+#| FUNCION CANDIDATOS |#
 
 
+#| FUNCION SELECCION |#
+;Selecciona las columnas con mas fichas del PC 
+(define(selec matrx index out)
+  
+  (cond
+       ((null? matrx) out)
+       (else
+        (cons(compu? (car matrx) index 0) (selec (cdr matrx) (+ index 1) out)))  
+       ))
+       
+
+;Funcion para saber si las fichas son del PC
+(define(compu? lista  index cant)
+  (cond
+    ((null? lista) (list index cant))
+    ((equal? (car lista) 2)
+     
+    (compu? (cdr lista)  index (+ cant 1)))
+      
+    (else
+     (compu? (cdr lista)  index cant))))
+
+;Saca el maximo de fichas del PC que hay en una columna    
+(define (maximo mat)
+  (cond
+    ((null? mat) 0)
+    (else 
+     (max (cadar mat) (maximo (cdr mat) ) ) 
+     )))
+;Busca la columna con el numero de fichas retornado en maximo
+(define (buscar mat elemento out)
+  (cond
+    ((null? mat) out)
+    ((equal? elemento (cadar mat))
+     (cons(car mat) (buscar (cdr mat) elemento out)))
+    (else
+     (buscar (cdr mat) elemento out)))) 
+#| FUNCION SELECCION |#     
+      
+
+#| FUNCION VIABILIDAD |#
+
+;Verifica que la columna a jugar no este llena
+(define (viabilidad columnas matrx )
+  (cond
+    ((null? columnas) null)
+    ((equal? (fullColumn? (caar columnas) matrx) #t) 
+       (viabilidad (cdr columnas)  matrx  )) 
+    (else
+     (cons (car columnas)(viabilidad (cdr columnas) matrx ) )))  )
+       
+;elimina la columna de la lista ajugar si esta esta llena    
+(define( eliminarLista elemento lista)
+  (cond((null? lista)
+        '() )
+       ((equal?(car lista) elemento)
+       (eliminarLista elemento (cdr lista)) ) 
+       (else
+        (cons (car lista) (eliminarLista elemento(cdr lista)))))) 
+
+#| FUNCION VIABILIDAD |#
 
 
+#| FUNCION OBJETIVO |#
+;asigna valores a las soluciones 
+(define (objetivo soluciones)
+  
+  (cond
+    ((null? soluciones)#f)
+    ((> (len soluciones) 1)
+     (caar soluciones))
+    (else
+     (caar soluciones))))
+     
+#| FUNCION OBJETIVO |#
+
+
+#| FUNCION SOLUCION |#
+;selecciona el mejor valor de las soluciones
+(define (solucion respuesta)
+
+   (not(null? respuesta))
+  (car respuesta) 
+  )
+#| FUNCION SOLUCION |#

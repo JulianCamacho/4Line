@@ -131,6 +131,7 @@
                             (asignar_matriz (play 1 col (car matrix)))
                             (refrescar_tablero)
                             (crear_matriz_interfaz (car matrix))
+                            (playPC)
                             
                            )
                            (else (showWonWindow))
@@ -140,7 +141,17 @@
   )
   
 )
+;Funcion que realiza la conexion con el algoritmo codicioso. Retorna un numero de columna donde colocar la ficha
+(define(colPC)
+  (objetivo (viabilidad (buscar (selec (traspuesta (car matrix) ) 0 '()) (maximo (selec (traspuesta (car matrix) ) 0 '())) '()) (car matrix))))
 
+;Funcion que usa el retorno de colPC para mostrar la jugada de la PC
+(define(playPC)
+  (printf "PLAYPC\n")
+(asignar_matriz (play 2 (colPC) (car matrix)))
+                            (refrescar_tablero)
+                            (crear_matriz_interfaz (car matrix))
+)
 
 ; Hace el espacio que representa fichas dependiendo del numero que toque (0 es vacío, 1 es ficha jugador, 2 ficha máquina)
 
