@@ -13,6 +13,69 @@
 (provide maximo)
 (provide solucion)
 
+
+#|==================================================================|#
+
+
+;;Verifica si hay ceros en una fila
+(define (hayCeros? lst)
+  (cond
+    ((null? lst) #f)
+    ((equal? (car lst) 0) #t)
+    (else (hayCeros? (cdr lst)))
+  )
+)
+
+(define (full_aux matrx)
+  (cond
+    ((null? matrx) #t)
+    ((hayCeros? (car matrx)) #f)
+    (else (full_aux (cdr matrx)))
+  )
+)
+
+;;Verifica si la matrix está llena => empate
+(define (full? matrx)
+  (cond
+    ((and (list? matrx) (list? (car matrx))) (full_aux matrx))
+  )
+)
+
+#|==================================================================|#
+
+;;Verifica si las dimensiones están en el rango
+(define (validDim? rows col)
+  (cond
+    ((and (>= rows 8) (<= rows 16) (>= col 8) (<= col 16)) #t)
+    (else #f)
+  )
+)
+
+;;Hace una lista de tantos ceros como número de columnas se den
+(define (makeRow col_number)
+  (cond
+    ((zero? col_number) null)
+    (else (cons 0 (makeRow (- col_number 1))))
+  )
+)
+
+(define (generateMatrx_aux m n)
+  (cond
+    ((zero? m) null)
+    (else (cons (makeRow n) (generateMatrx_aux (- m 1) n)))
+  )
+)
+
+;;Generar una matriz de dimensiones m x n vacía (solo de ceros) 
+(define (generateMatrx m n)
+  (cond
+    ((validDim? m n) (generateMatrx_aux m n))
+    (else #f)
+  )
+)
+
+#|==================================================================|#
+
 (define (getPos_aux elem lst index out)
   (cond
     ((null? lst) (reverseList out))
@@ -48,67 +111,6 @@
 ;; matrx[0][3]  =>
 ;; > (at 3 (at 0 '((1 2 3 4 5) (6 7 8 9 10))))
 ;; > 4
-
-#|==================================================================|#
-
-
-;;Verifica si hay ceros en una fila
-(define (hayCeros? lst)
-  (cond
-    ((null? lst) #f)
-    ((equal? (car lst) 0) #t)
-    (else (hayCeros? (cdr lst)))
-  )
-)
-
-(define (full_aux matrx)
-  (cond
-    ((null? matrx) #t)
-    ((hayCeros? (car matrx)) #f)
-    (else (full_aux (cdr matrx)))
-  )
-)
-
-;;Verifica si la matrix está llena => empate
-(define (full? matrx)
-  (cond
-    ((and (list? matrx) (list? (car matrx))) (full_aux matrx))
-  )
-)
-
-;;(full? '((1 2 1 2 0) (2 2 2 2 1) (1 2 2 1 2)))
-#|==================================================================|#
-
-;;Verifica si las dimensiones están en el rango
-(define (validDim? rows col)
-  (cond
-    ((and (>= rows 8) (<= rows 16) (>= col 8) (<= col 16)) #t)
-    (else #f)
-  )
-)
-
-;;Hace una lista de tantos ceros como número de columnas se den
-(define (makeRow col_number)
-  (cond
-    ((zero? col_number) null)
-    (else (cons 0 (makeRow (- col_number 1))))
-  )
-)
-
-(define (generateMatrx_aux m n)
-  (cond
-    ((zero? m) null)
-    (else (cons (makeRow n) (generateMatrx_aux (- m 1) n)))
-  )
-)
-
-;;Generar una matriz de dimensiones m x n vacía (solo de ceros) 
-(define (generateMatrx m n)
-  (cond
-    ((validDim? m n) (generateMatrx_aux m n))
-    (else #f)
-  )
-)
 
 #|==================================================================|#
 
@@ -155,6 +157,7 @@
 
 #|==================================================================|#
 
+
 ;;Efecto que cae hasta abajo
 (define (gravityCheck column player)
   (cond
@@ -167,8 +170,6 @@
     (else (cons (car column) (gravityCheck (cdr column) player)))
   )
 )
-
-
 
 
 #|=================  Verificar Horizontales y Verticales   ================|#
@@ -194,19 +195,11 @@
   )
 )
 
+
 #|======================  Verificar Diagonales  ======================|#
 
 
-;; matrx[0][3]  =>
-;; > (at 3 (at 0 '((1 2 3 4 5) (6 7 8 9 10))))
-;; > 4
-
-
 ;;Recorrer la matriz superior por sus diagonales de izquierda(L) a derecha (R)
-
-;;for (var i=0;i<m.length;i++) {
-;;    for (var j=0;j<=i;j++) {
-;;      alert (m[i-j][j]);
 
 (define (recorrerDiag_Sup_L_R_aux matrx i j vec result)
   (cond
@@ -229,10 +222,6 @@
 
 
 ;;Recorrer la matriz inferior por sus diagonales de izquierda(L) a derecha (R)
-
-;;for (var i=0;i<m.length;i++) {
-;;    for (var j=0;j<m.length-i-1;j++) { 
-;;        alert (m[m.length-j-1][j+i+1]);
 
 (define (recorrerDiag_Inf_L_R_aux matrx i j vec result)
   (cond
@@ -305,24 +294,15 @@
 ;;Verifica si hay 4 en línea en las diagonales de izquierda a derecha o viceversa
 (define (checkAllDiag player matrx)
   (cond
-    ((or (checkAllDiag_aux player (recorrerDiag_L_R matrx))
-         (checkAllDiag_aux player (recorrerDiag_R_L matrx))) #t)
-    (else #f)
+    ((> (len (car matrx)) (len matrx))
+     (or (checkAllDiag_aux player (recorrerDiag_L_R (traspuesta matrx)))
+         (checkAllDiag_aux player (recorrerDiag_R_L (traspuesta matrx))))
+    )
+    (else (or (checkAllDiag_aux player (recorrerDiag_L_R matrx))
+         (checkAllDiag_aux player (recorrerDiag_R_L matrx)))
+    )
   )
 )
-
-
-
-
-(define M '((00 01 02 03 04 05 06)
-            (10 11 12 13 14 15 16) 
-            (20 21 22 23 24 25 26)
-            (30 31 32 33 34 35 36)
-            (40 41 42 43 44 45 46)
-            (50 51 52 53 54 55 56)
-            (60 61 62 63 64 65 66)
-           ))
-
 
 #|==================================================================|#
 
@@ -332,11 +312,11 @@
     ;;Verifica para el jugador si hay 4 en línea en filas y columnas
     ((or (checkAllLines 1 matrx) (checkAllLines 1 (traspuesta matrx))) "You won")
     ;;Verifica para la máquina si hay 4 en línea en filas y columnas
-    ((or (checkAllLines 2 matrx) (checkAllLines 2 (traspuesta matrx))) "F")
+    ((or (checkAllLines 2 matrx) (checkAllLines 2 (traspuesta matrx))) "You Lost")
     ;;Verifica para el jugador si hay 4 en línea en las diagonales
     ((checkAllDiag 1 matrx) "You won")
     ;;Verifica para la máquina si hay 4 en línea en las diagonales
-    ((checkAllDiag 2 matrx) "F")
+    ((checkAllDiag 2 matrx) "You Lost")
     (else "Nadie ha ganado aún")
   )
 )
@@ -357,44 +337,13 @@
 (define (play player colNum matrx)
   (cond
     ((equal? (win? (traspuesta (play_aux player colNum (traspuesta matrx) 0))) "You won") "El juego ha terminado: GANADOR")
-    ((equal? (win? (traspuesta (play_aux player colNum (traspuesta matrx) 0))) "F") "El juego ha terminado: HA PERDIDO")
+    ((equal? (win? (traspuesta (play_aux player colNum (traspuesta matrx) 0))) "You Lost") "El juego ha terminado: HA PERDIDO")
     ((full? (traspuesta (play_aux player colNum (traspuesta matrx) 0))) "El juego ha terminado: Empate")
     ((or (> colNum (len (car matrx))) (fullColumn? colNum matrx)) "Error, no se puede jugar en esa columna")
     (else (traspuesta (play_aux player colNum (traspuesta matrx) 0)))
   )
 )
 
-;;Las diagonales solo funcionan para matrices cuadradas o si m > n
-;;Si tiene más columnas que filas no sirven
-
-(provide saludar)
-(define(saludar)
- "hola"
-)
-;;No sirven
-(win? '((2 0 0 0 0 0 0 0)
-        (1 2 0 0 2 0 0 0)
-        (1 1 2 0 1 0 0 0)
-        (2 1 1 2 1 0 0 0)
-      ))
-
-;;Sirven diagonales
-(win? '((0 0 0 0)
-        (1 0 1 2)
-        (1 2 2 2)
-        (1 2 1 1)
-        (2 1 1 2)
-        (2 1 2 2)
-        (2 2 1 2)
-        (1 1 2 1)
-        ))
-
-(win? '((0 0 0 0)
-        (1 0 1 2)
-        (1 2 2 2)
-        (1 2 1 1)
-        (2 1 1 2)
-        ))
 
 #|==================================================================|#
 ;;GREEDY ALGORITHM

@@ -6,9 +6,6 @@
 (require (prefix-in htdp: 2htdp/image))
 
 (require "Logica.rkt")
-;(include "Logica.rkt")
-;(include "foo.rkt")
-
 
 
 ; ||============= Variables necesarias para el juego y sus respectivos set! ==========||
