@@ -4,6 +4,7 @@
 
 (provide generateMatrx)
 (provide play)
+(provide candi)
 (provide selec)
 (provide objetivo)
 (provide viabilidad)
@@ -407,17 +408,17 @@
      (len (car matrx)))))
 #| FUNCION CANDIDATOS |#
 
-
 #| FUNCION SELECCION |#
 ;Selecciona las columnas con mas fichas del PC 
-(define(selec matrx index out)
+(define(selec matrx index out exp)
   
   (cond
        ((null? matrx) out)
+       (( and  (not(null? exp)) (equal? index (car exp)) )
+        (selec (cdr matrx) (+ index 1) out (cdr exp)))
        (else
-        (cons(compu? (car matrx) index 0) (selec (cdr matrx) (+ index 1) out)))  
+        (cons(compu? (car matrx) index 0) (selec (cdr matrx) (+ index 1) out exp)))  
        ))
-       
 
 ;Funcion para saber si las fichas son del PC
 (define(compu? lista  index cant)
@@ -451,36 +452,39 @@
 #| FUNCION VIABILIDAD |#
 
 ;Verifica que la columna a jugar no este llena
-(define (viabilidad columnas matrx )
+(define (viabilidad columnas matrx exp)
   (cond
     ((null? columnas) null)
-    ((equal? (fullColumn? (caar columnas) matrx) #t) 
-       (viabilidad (cdr columnas)  matrx  )) 
+    ((and (equal? (fullColumn? (caar columnas) matrx) #t) (=(len columnas) 1))
+     (buscar  (selec matrx 0 '()  (cons (caar columnas) exp) )(maximo (selec matrx 0 '()  (cons exp (caar columnas)) ) ) '())
+     )
+    ((equal? (fullColumn? (caar columnas) matrx) #t)
+     (viabilidad (cdr columnas)  matrx  exp))
     (else
-     (cons (car columnas)(viabilidad (cdr columnas) matrx ) )))  )
-       
-;elimina la columna de la lista ajugar si esta esta llena    
-(define( eliminarLista elemento lista)
+     (cons (car columnas) (viabilidad (cdr columnas)  matrx exp) )))  ) 
+
+(define( eliminarCol elemento index lista)
   (cond((null? lista)
         '() )
-       ((equal?(car lista) elemento)
-       (eliminarLista elemento (cdr lista)) ) 
+       ((equal? index elemento)
+       (eliminarCol elemento (+ index 1) (cdr lista)) ) 
        (else
-        (cons (car lista) (eliminarLista elemento(cdr lista)))))) 
+        (cons (car lista) (eliminarCol elemento (+ index 1) (cdr lista))))))
 
+  
 #| FUNCION VIABILIDAD |#
 
 
 #| FUNCION OBJETIVO |#
 ;asigna valores a las soluciones 
-(define (objetivo soluciones)
-  
+(define (objetivo soluciones matrx)
   (cond
     ((null? soluciones)#f)
     ((> (len soluciones) 1)
-     (caar soluciones))
+     (car soluciones)
+     )
     (else
-     (caar soluciones))))
+     (car soluciones))))  
      
 #| FUNCION OBJETIVO |#
 
@@ -493,3 +497,5 @@
   (car respuesta) 
   )
 #| FUNCION SOLUCION |#
+
+

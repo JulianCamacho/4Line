@@ -141,14 +141,21 @@
   )
   
 )
+
 ;Funcion que realiza la conexion con el algoritmo codicioso. Retorna un numero de columna donde colocar la ficha
 (define(colPC)
-  (objetivo (viabilidad (buscar (selec (traspuesta (car matrix) ) 0 '()) (maximo (selec (traspuesta (car matrix) ) 0 '())) '()) (car matrix))))
+   (solucion
+    (objetivo
+    (viabilidad
+     (buscar
+      (selec (traspuesta (car matrix) ) 0 '() null)
+      (maximo (selec (traspuesta (car matrix) ) 0 '() null)) '()) (car matrix) '()) (car matrix)  )))
 
 ;Funcion que usa el retorno de colPC para mostrar la jugada de la PC
 (define(playPC)
   (printf "PLAYPC\n")
-(asignar_matriz (play 2 (colPC) (car matrix)))
+  (define candidatos (candi  matrix)) 
+(asignar_matriz (play 2 (colPC) (car matrix))) 
                             (refrescar_tablero)
                             (crear_matriz_interfaz (car matrix))
 )
