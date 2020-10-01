@@ -121,10 +121,10 @@
              [horiz-margin 1]
              ; Callback procedure for a button click:
              [callback (lambda (button event)
-                         ;(writeln (play 1 col (car matrix) ) )
+                         (writeln (play 1 col (car matrix) ) )
                          (cond
                            ;Si la función jugar devuelve un string es que el jugador ya ganó
-                           ((not (string? (car matrix)) )
+                           ((not (string? (play 1 col (car matrix) )) )
                             (asignar_matriz (play 1 col (car matrix)))
                             (refrescar_tablero)
                             (crear_matriz_interfaz (car matrix))
